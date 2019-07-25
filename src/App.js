@@ -8,7 +8,7 @@ function App() {
       <div className="row">
         <div className="col bg-light left-panel">
           <FileSearch 
-            title='我的云文档'
+            title='My Document'
             onFileSearch={(value) => { console.log(value) }}
           />
         </div>
