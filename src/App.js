@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { faPlus, faFileImport } from '@fortawesome/free-solid-svg-icons'
 import SimpleMDE from "react-simplemde-editor"
+import uuidv4 from 'uuid/v4'
 
 import './App.css'
 import 'bootstrap/dist/css/bootstrap.min.css'
@@ -73,6 +74,7 @@ function App() {
     const newFiles = files.map(file => {
       if (file.id === id) {
         file.title = title
+        file.isNew = false
       }
       return file
     })
@@ -82,6 +84,21 @@ function App() {
     // filter out the new files based on the keyword
     const newFiles = files.filter(file => file.title.includes(keyword))
     setSearchedFiles(newFiles)
+  }
+
+  const createNewFile = () => {
+    const newID = uuidv4()
+    const newFiles = [
+      ...files,
+      {
+        id: newID,
+        title: '',
+        body: '## 请输出 Markdown',
+        createdAt: new Date().getTime(),
+        isNew: true,
+      }
+    ]
+    setFiles(newFiles)
   }
   const activeFile = files.find(file => file.id === activeFileID)
   const fileListArr = (searchedFiles.length > 0) ? searchedFiles : files
@@ -105,6 +122,7 @@ function App() {
                 text="新建"
                 colorClass="btn-primary"
                 icon={faPlus}
+                onBtnClick={createNewFile}
               />
             </div>
             <div className="col">
