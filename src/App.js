@@ -12,15 +12,16 @@ import FileList from './components/FileList'
 import BottomBtn from './components/BottomBtn'
 import TabList from './components/TabList'
 import defaultFiles from './utils/defaultFiles'
+
+const fs = window.require('fs')
+console.dir(fs)
 function App() {
   const [ files, setFiles ] = useState(flattenArr(defaultFiles))
-  console.log(files)
   const [ activeFileID, setActiveFileID ] =useState('')
   const [ openedFileIDs, setOpenedFileIDs ] = useState([])
   const [ unsavedFileIDs, setUnsavedFileIDs ] = useState([])
   const [ searchedFiles, setSearchedFiles ] = useState([])
   const filesArr = objToArr(files)
-  console.log(filesArr)
 
   const fileClick = (fileID) => {
     // set current active file
