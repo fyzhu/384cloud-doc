@@ -52,6 +52,13 @@ function App() {
   const fileClick = (fileID) => {
     // set current active file
     setActiveFileID(fileID)
+    const currentFile = files[fileID]
+    if (!currentFile.isLoaded) {
+      fileHelper.readFile(currentFile.path).then(value => {
+        const newFile = { ...files[fileID], body: value, isLoaded: true }
+        setFiles({ ...files, [fileID]: newFile })
+      })
+    }
     // if openedFiles don't have the current ID
     // then add new fileID to openedFiles
     if (!openedFileIDs.includes(fileID)) {
@@ -85,14 +92,20 @@ function App() {
     }
   }
   const deleteFile = (id) => {
-    fileHelper.deleteFile(files[id].path).then(() => {
+    console.log(files[id].isNew)
+    if (files[id].isNew) {
       delete files[id]
+      console.log(files)
       setFiles(files)
-      saveFilesToStore(files)
-      // close the tab if opened
-      tabClose(id)
-    })
-
+    } else {
+      fileHelper.deleteFile(files[id].path).then(() => {
+        delete files[id]
+        setFiles(files)
+        saveFilesToStore(files)
+        // close the tab if opened
+        tabClose(id)
+      })
+    }
   }
   const updateFileName = (id, title, isNew) => {
     const newPath = join(savedLocation, `${title}.md`)
@@ -193,7 +206,7 @@ function App() {
                 }}
               />
               <BottomBtn 
-                text="导入"
+                text="保存"
                 colorClass="btn-success"
                 icon={faSave}
                 onBtnClick={saveCurrentFile}
