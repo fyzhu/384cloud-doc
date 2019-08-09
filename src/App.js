@@ -92,16 +92,14 @@ function App() {
     }
   }
   const deleteFile = (id) => {
-    console.log(files[id].isNew)
     if (files[id].isNew) {
-      delete files[id]
-      console.log(files)
-      setFiles(files)
+      const { [id]: value, ...afterDelete } = files
+      setFiles(afterDelete)
     } else {
       fileHelper.deleteFile(files[id].path).then(() => {
-        delete files[id]
-        setFiles(files)
-        saveFilesToStore(files)
+        const { [id]: value, ...afterDelete } = files
+        setFiles(afterDelete)
+        saveFilesToStore(afterDelete)
         // close the tab if opened
         tabClose(id)
       })
