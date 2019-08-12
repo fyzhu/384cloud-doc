@@ -4,6 +4,7 @@ import { faEdit, faTrash, faTimes } from '@fortawesome/free-solid-svg-icons'
 import { faMarkdown } from '@fortawesome/free-brands-svg-icons'
 import PropTypes from 'prop-types'
 import useKeyPress from '../hooks/useKeyPress'
+import useContextMenu from '../hooks/useContextMenu'
 
 const FileList = ( { files, onFileClick, onSaveEdit, onFileDelete }) => {
   const [ editStatus, setEditStatus ] = useState(false)
@@ -19,6 +20,27 @@ const FileList = ( { files, onFileClick, onSaveEdit, onFileDelete }) => {
       onFileDelete(editItem.id)
     }
   }
+  const clickedItem = useContextMenu([
+    {
+      label: '打开',
+      click: () => {
+        console.log('clicking', clickedItem.current)
+      }
+    },
+    {
+      label: '重命名',
+      click: () => {
+        console.log('renaming')
+      }
+    },
+    {
+      label: '删除',
+      click: () => {
+        console.log('deleting')
+      }
+    },
+  ], '.file-list')
+
   useEffect(() => {
     const editItem = files.find(file => file.id === editStatus)
     if (enterPressed && editStatus && value.trim() !== '') {
