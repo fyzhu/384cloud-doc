@@ -3,17 +3,25 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSearch, faTimes } from '@fortawesome/free-solid-svg-icons'
 import PropTypes from 'prop-types'
 import useKeyPress from '../hooks/useKeyPress'
+import useIpcRenderer from '../hooks/useIpcRenderer'
+
 const FileSearch = ({ title, onFileSearch }) => {
   const [ inputActive, setInputActive ] = useState(false)
   const [ value, setValue ] = useState('')
   const enterPressed = useKeyPress(13)
   const escPressed = useKeyPress(27)
   let node = useRef(null)
+  const startSearch = () => {
+    setInputActive(true)
+  }
   const closeSearch = () => {
     setInputActive(false)
     setValue('')
-    onFileSearch('')
+    onFileSearch(false)
   }
+  useIpcRenderer({
+    'search-file': startSearch
+  })
   useEffect(() => {
     if (enterPressed && inputActive) {
       onFileSearch(value)
@@ -35,7 +43,7 @@ const FileSearch = ({ title, onFileSearch }) => {
           <button
             type="button"
             className="icon-button"
-            onClick={() => { setInputActive(true) }}
+            onClick={startSearch}
           >
             <FontAwesomeIcon
               title="搜索"

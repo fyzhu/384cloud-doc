@@ -12,7 +12,7 @@ import FileSearch from './components/FileSearch'
 import FileList from './components/FileList'
 import BottomBtn from './components/BottomBtn'
 import TabList from './components/TabList'
-
+import useIpcRenderer from './hooks/useIpcRenderer'
 // require node.js modules
 const { join, basename, extname, dirname } = window.require('path')
 const { remote, ipcRenderer } = window.require('electron')
@@ -83,11 +83,13 @@ function App() {
   }
 
   const fileChange = (id, value) => {
-    const newFile = { ...files[id], body: value }
-    setFiles({ ...files, [id]: newFile })
-    // update unsavedIDs
-    if (!unsavedFileIDs.includes(id)) {
-      setUnsavedFileIDs([ ...unsavedFileIDs, id])
+    if (value !== files[id].body) {
+      const newFile = { ...files[id], body: value }
+      setFiles({ ...files, [id]: newFile })
+      // update unsavedIDs
+      if (!unsavedFileIDs.includes(id)) {
+        setUnsavedFileIDs([ ...unsavedFileIDs, id])
+      }
     }
   }
   const deleteFile = (id) => {
@@ -190,14 +192,10 @@ function App() {
       }
     })
   }
-  useEffect(() => {
-    const callback = () => {
-      console.log('hello from menu')
-    }
-    ipcRenderer.on('create-new-file', callback)
-    return () => {
-      ipcRenderer.removeListener('create-new-file', callback)
-    }
+  useIpcRenderer({
+    'create-new-file': createNewFile,
+    'import-file': importFiles,
+    'save-edit-file': saveCurrentFile,
   })
   return (
     <div className="App container-fluid px-0">
@@ -254,12 +252,6 @@ function App() {
                 options={{
                   minHeight: '515px',
                 }}
-              />
-              <BottomBtn 
-                text="保存"
-                colorClass="btn-success"
-                icon={faSave}
-                onBtnClick={saveCurrentFile}
               />
             </>
           }
