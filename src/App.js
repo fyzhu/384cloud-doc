@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { faPlus, faFileImport, faSave } from '@fortawesome/free-solid-svg-icons'
 import SimpleMDE from "react-simplemde-editor"
 import uuidv4 from 'uuid/v4'
@@ -15,7 +15,7 @@ import TabList from './components/TabList'
 
 // require node.js modules
 const { join, basename, extname, dirname } = window.require('path')
-const { remote } = window.require('electron')
+const { remote, ipcRenderer } = window.require('electron')
 const Store = window.require('electron-store')
 const fileStore = new Store({'name': 'Files Data'})
 
@@ -190,6 +190,15 @@ function App() {
       }
     })
   }
+  useEffect(() => {
+    const callback = () => {
+      console.log('hello from menu')
+    }
+    ipcRenderer.on('create-new-file', callback)
+    return () => {
+      ipcRenderer.removeListener('create-new-file', callback)
+    }
+  })
   return (
     <div className="App container-fluid px-0">
       <div className="row no-gutters">
