@@ -1,6 +1,7 @@
 const { remote } = require('electron')
 const Store = require('electron-store')
 const settingsStore = new Store({name: 'Settings'})
+const qiniuConfigArr = ['#savedFileLocation','#accessKey', '#secretKey', '#bucketName']
 
 const $ = (selector) => {
   const result = document.querySelectorAll(selector)
@@ -12,6 +13,13 @@ document.addEventListener('DOMContentLoaded', () => {
   if (savedLocation) {
     $('#savedFileLocation').value = savedLocation
   }
+  // get the saved config data and fill in the inputs
+  qiniuConfigArr.forEach(selector => {
+    const savedValue = settingsStore.get(selector.substr(1))
+    if (savedValue) {
+      $(selector).value = savedValue
+    }
+  })
   $('#select-new-location').addEventListener('click', () => {
     remote.dialog.showOpenDialog({
       properties: ['openDirectory'],
@@ -19,12 +27,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }, (path) => {
       if (Array.isArray(path)) {
         $('#savedFileLocation').value = path[0]
-        savedLocation = path[0]
       }
     })
   })
-  $('#settings-form').addEventListener('submit', () => {
-    settingsStore.set('savedFileLocation', savedLocation)
+  $('#settings-form').addEventListener('submit', (e) => {
+    e.preventDefault()
+    qiniuConfigArr.forEach(selector => {
+      if ($(selector)) {
+        let { id, value } = $(selector)
+        settingsStore.set(id, value ? value : '')
+      }
+    })
     remote.getCurrentWindow().close()
   })
   $('.nav-tabs').addEventListener('click', (e) => {
