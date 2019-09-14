@@ -15,11 +15,11 @@ import TabList from './components/TabList'
 import useIpcRenderer from './hooks/useIpcRenderer'
 // require node.js modules
 const { join, basename, extname, dirname } = window.require('path')
-const { remote } = window.require('electron')
+const { remote, ipcRenderer } = window.require('electron')
 const Store = window.require('electron-store')
 const fileStore = new Store({'name': 'Files Data'})
 const settingsStore = new Store({name: 'Settings'})
-
+const getAutoSync = () => ['accessKey', 'secretKey', 'bucketName', 'enableAutoSync'].every(key => !!settingsStore.get(key))
 const saveFilesToStore = (files) => {
   // we don't have to store any info in file system, eg: isNew, body ,etc
   const filesStoreObj = objToArr(files).reduce((result, file) => {
@@ -146,10 +146,12 @@ function App() {
     setFiles({ ...files, [newID]: newFile })
   }
   const saveCurrentFile = () => {
-    fileHelper.writeFile(activeFile.path,
-      activeFile.body
-    ).then(() => {
+    const { path, body, title } = activeFile
+    fileHelper.writeFile(path, body).then(() => {
       setUnsavedFileIDs(unsavedFileIDs.filter(id => id !== activeFile.id))
+      if (getAutoSync()) {
+        ipcRenderer.send('upload-file', {key: `${title}.md`, path })
+      }
     })
   }
   const importFiles = () => {
