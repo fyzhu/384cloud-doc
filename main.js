@@ -47,6 +47,7 @@ app.on('ready', () => {
     const manager = createManager()
     manager.uploadFile(data.key, data.path).then(data => {
       console.log('上传成功', data)
+      mainWindow.webContents.send('active-file-uploaded')
     }).catch(() => {
       dialog.showErrorBox('同步失败', '请检查七牛云参数是否正确')
     })
