@@ -6,6 +6,7 @@ const AppWindow = require('./src/AppWindow')
 const Store = require('electron-store')
 const QiniuManager = require('./src/utils/QiniuManager')
 const settingsStore = new Store({ name: 'Settings'})
+const fileStore = new Store({name: 'Files Data'})
 let mainWindow, settingsWindow
 
 const createManager = () => {
@@ -50,6 +51,19 @@ app.on('ready', () => {
       mainWindow.webContents.send('active-file-uploaded')
     }).catch(() => {
       dialog.showErrorBox('同步失败', '请检查七牛云参数是否正确')
+    })
+  })
+  ipcMain.on('download-file', (event, data) => {
+    const manager = createManager()
+    const filesObj = fileStore.get('files')
+    manager.getStat(data.key).then((resp) => {
+      console.log(resp)
+      console.log(filesObj[data.id])
+    }, (error) => {
+      console.log(error)
+      if (error.statusCode === 612) {
+        mainWindow.webContents.send('file-downloaded', {status: 'no-file'})
+      }
     })
   })
   ipcMain.on('config-is-saved', () => {
