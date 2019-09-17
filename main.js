@@ -56,13 +56,20 @@ app.on('ready', () => {
   ipcMain.on('download-file', (event, data) => {
     const manager = createManager()
     const filesObj = fileStore.get('files')
+    const { key, path, id } = data
     manager.getStat(data.key).then((resp) => {
-      console.log(resp)
-      console.log(filesObj[data.id])
+      const serverUpdatedTime = Math.round(resp.putTime / 10000)
+      const localUpdatedTime = filesObj[id].updatedAt
+      if (serverUpdatedTime > localUpdatedTime || !localUpdatedTime) {
+        manager.downloadFile(key, path).then(() => {
+          mainWindow.webContents.send('file-downloaded', {status: 'download-success', id})
+        })
+      } else {
+        mainWindow.webContents.send('file-downloaded', {status: 'no-new-file', id})
+      }
     }, (error) => {
-      console.log(error)
       if (error.statusCode === 612) {
-        mainWindow.webContents.send('file-downloaded', {status: 'no-file'})
+        mainWindow.webContents.send('file-downloaded', {status: 'no-file', id})
       }
     })
   })

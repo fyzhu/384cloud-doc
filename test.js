@@ -8,12 +8,9 @@ const key='test.md'
 const downloadPath = path.join(__dirname, key)
 
 const manager = new QiniuManager(accessKey, secretKey, 'markdown')
-// manager.uploadFile(key, localFile).then((data) => {
-//   console.log('上传成功',data)
-//   return manager.deleteFile(key)
-// }).then((data) => {
-//   console.log('删除成功')
-// })
+manager.uploadFile(key, downloadPath).then((data) => {
+  console.log('上传成功',data)
+})
 //manager.deleteFile(key)
 // manager.generateDownloadLink(key).then(data => {
 //   console.log(data)
@@ -23,7 +20,7 @@ const manager = new QiniuManager(accessKey, secretKey, 'markdown')
 // })
 //const publicBucketDomain = 'http://pv8m1mqyk.bkt.clouddn.com';
 
-manager.downloadFile(key, downloadPath).then(() => {
-  console.log('下载写入文件完毕')
-})
+// manager.downloadFile(key, downloadPath).then(() => {
+//   console.log('下载写入文件完毕')
+// })
 

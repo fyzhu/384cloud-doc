@@ -209,11 +209,27 @@ function App() {
     setFiles(newFiles)
     saveFilesToStore(newFiles)
   }
+  const activeFileDownloaded = (event, message) => {
+    const currentFile = files[message.id]
+    const { id, path } = currentFile
+    fileHelper.readFile(path).then(value => {
+      let newFile
+      if (message.status === 'download-success') {
+        newFile = { ...files[id], body: value, isLoaded: true, isSynced: true, updatedAt: new Date().getTime() }
+      } else {
+        newFile = { ...files[id], body: value, isLoaded: true}
+      }
+      const newFiles = { ...files, [id]: newFile }
+      setFiles(newFiles)
+      saveFilesToStore(newFiles)
+    })
+  }
   useIpcRenderer({
     'create-new-file': createNewFile,
     'import-file': importFiles,
     'save-edit-file': saveCurrentFile,
     'active-file-uploaded': activeFileUploaded,
+    'file-downloaded': activeFileDownloaded,
   })
   return (
     <div className="App container-fluid px-0">
