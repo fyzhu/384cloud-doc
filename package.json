@@ -7,7 +7,7 @@
     "name": "Viking Zhang",
     "email": "vikingmute@gmail.com"
   },
-  "repository":"https://git.imooc.com/coding-384/cloud-doc", 
+  "repository": "https://git.imooc.com/coding-384/cloud-doc",
   "private": true,
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.19",
@@ -17,6 +17,7 @@
     "axios": "^0.19.0",
     "bootstrap": "^4.3.1",
     "classnames": "^2.2.6",
+    "electron-is-dev": "^1.1.0",
     "electron-store": "^4.0.0",
     "node-sass": "^4.12.0",
     "qiniu": "^7.2.2",
@@ -37,10 +38,22 @@
     "dist": "electron-builder",
     "prepack": "npm run build"
   },
+  "homepage": "./",
   "build": {
     "appId": "cloudDoc",
     "productName": "七牛云文档",
-    "copyright": "Copyright © 2019 ${author}"
+    "copyright": "Copyright © 2019 ${author}",
+    "files": [
+      "build/**/*",
+      "node_modules/**/*",
+      "settings/**/*",
+      "package.json",
+      "main.js",
+      "./src/menuTemplate.js",
+      "./src/AppWindow.js",
+      "./src/utils/QiniuManager.js"
+    ],
+    "extends": null
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -62,7 +75,6 @@
     "cross-env": "^5.2.0",
     "electron": "^5.0.6",
     "electron-builder": "^21.2.0",
-    "electron-is-dev": "^1.1.0",
     "wait-on": "^3.3.0"
   }
 }
