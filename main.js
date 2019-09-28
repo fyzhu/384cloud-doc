@@ -1,5 +1,6 @@
 const { app, Menu, ipcMain, dialog } = require('electron')
 const isDev = require('electron-is-dev')
+const { autoUpdater } = require('electron-updater')
 const path = require('path')
 const menuTemplate = require('./src/menuTemplate')
 const AppWindow = require('./src/AppWindow')
@@ -16,7 +17,29 @@ const createManager = () => {
   return new QiniuManager(accessKey, secretKey, bucketName)
 }
 app.on('ready', () => {
-
+  autoUpdater.autoDownload = false
+  autoUpdater.checkForUpdatesAndNotify()
+  autoUpdater.on('error', (error) => {
+    dialog.showErrorBox('Error: ', error == null ? "unknown" : (error.stack || error).toString())
+  })
+  autoUpdater.on('update-available', () => {
+    dialog.showMessageBox({
+      type: 'info',
+      title: '应用有新的版本',
+      message: '发现新版本，是否现在更新?',
+      buttons: ['是', '否']
+    }, (buttonIndex) => {
+      if (buttonIndex === 0) {
+        autoUpdater.downloadUpdate()
+      }
+    })
+  })
+  autoUpdater.on('update-not-available', () => {
+    dialog.showMessageBox({
+      title: '没有新版本',
+      message: '当前已经是最新版本'
+    })
+  })
   const mainWindowConfig = {
     width: 1440,
     height: 768,   
