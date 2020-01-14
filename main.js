@@ -94,7 +94,8 @@ app.on('ready', () => {
     manager.uploadFile(data.key, data.path).then(data => {
       console.log('上传成功', data)
       mainWindow.webContents.send('active-file-uploaded')
-    }).catch(() => {
+    }).catch((e) => {
+      console.log(e)
       dialog.showErrorBox('同步失败', '请检查七牛云参数是否正确')
     })
   })
@@ -135,7 +136,8 @@ app.on('ready', () => {
         message: `成功上传了${result.length}个文件`,
       })
       mainWindow.webContents.send('files-uploaded')
-    }).catch(() => {
+    }).catch((e) => {
+      console.log(e)
       dialog.showErrorBox('同步失败', '请检查七牛云参数是否正确')
     }).finally(() => {
       mainWindow.webContents.send('loading-status', false)
